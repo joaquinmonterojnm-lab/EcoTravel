@@ -53,10 +53,10 @@ export const Route = createFileRoute("/")({
 });
 
 const navLinks = [
-  { label: "Inicio", to: "/" },
-  { label: "Destinos", to: "#destinos" },
-  { label: "Consejos", to: "#consejos" },
-  { label: "Contacto", to: "#contacto" },
+  { label: "Inicio", href: "/" },
+  { label: "Destinos", href: "#destinos" },
+  { label: "Consejos", href: "#consejos" },
+  { label: "Contacto", href: "#contacto" },
 ];
 
 const destinations = [
@@ -83,6 +83,31 @@ const destinations = [
   },
 ];
 
+function NavAnchor({
+  href,
+  children,
+  className,
+  onClick,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className: string;
+  onClick?: () => void;
+}) {
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} className={className} onClick={onClick}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link to={href} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
+
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -104,23 +129,23 @@ function Index() {
 
           <nav className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
-              <Link
+              <NavAnchor
                 key={link.label}
-                to={link.to}
+                href={link.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 {link.label}
-              </Link>
+              </NavAnchor>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="#contacto"
+            <a
+              href="#contacto"
               className="hidden rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
             >
               Planifica tu viaje
-            </Link>
+            </a>
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
@@ -141,22 +166,22 @@ function Index() {
           <div className="border-t border-border bg-background px-4 py-4 md:hidden">
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => (
-                <Link
+                <NavAnchor
                   key={link.label}
-                  to={link.to}
+                  href={link.href}
                   onClick={() => setMenuOpen(false)}
                   className="rounded-md px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   {link.label}
-                </Link>
+                </NavAnchor>
               ))}
-              <Link
-                to="#contacto"
+              <a
+                href="#contacto"
                 onClick={() => setMenuOpen(false)}
                 className="mt-2 inline-flex items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Planifica tu viaje
-              </Link>
+              </a>
             </nav>
           </div>
         )}
@@ -178,19 +203,19 @@ function Index() {
               conciencia.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                to="#destinos"
+              <a
+                href="#destinos"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Explorar destinos
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <Link
-                to="#consejos"
+              </a>
+              <a
+                href="#consejos"
                 className="inline-flex items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 Consejos de viaje verde
-              </Link>
+              </a>
             </div>
           </div>
         </section>
@@ -230,13 +255,13 @@ function Index() {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                     {destination.description}
                   </p>
-                  <Link
-                    to={`#${destination.id}`}
+                  <a
+                    href={`#${destination.id}`}
                     className="mt-5 inline-flex items-center gap-2 self-start rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Ver más
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+                  </a>
                 </div>
               </article>
             ))}
