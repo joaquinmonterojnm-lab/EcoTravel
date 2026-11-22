@@ -19,6 +19,12 @@ import andes from "@/assets/andes.jpg";
 import amazonia from "@/assets/amazonia.jpg";
 import uyuni from "@/assets/uyuni.jpg";
 import cartagena from "@/assets/cartagena.jpg";
+import galapagos from "@/assets/galapagos.jpg";
+import machupicchu from "@/assets/machupicchu.jpg";
+import iguazu from "@/assets/iguazu.jpg";
+import atacama from "@/assets/atacama.jpg";
+import tayrona from "@/assets/tayrona.jpg";
+import noronha from "@/assets/noronha.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -123,6 +129,54 @@ const destinations: Destination[] = [
     description:
       "Caminá murallas, plazas y barrios caribeños. Alojamientos familiares, cocina de mercado y visitas que sostienen el patrimonio vivo de la costa.",
     categories: ["Cultura", "Playa"],
+  },
+  {
+    id: "galapagos",
+    title: "Islas Galápagos",
+    image: galapagos,
+    description:
+      "Nadá junto a lobos marinos y tortugas gigantes en un parque nacional con cupos limitados que protegen uno de los ecosistemas más únicos del mundo.",
+    categories: ["Playa", "Naturaleza"],
+  },
+  {
+    id: "machupicchu",
+    title: "Machu Picchu",
+    image: machupicchu,
+    description:
+      "Llegá por el Camino Inca con porteadores locales y entradas reguladas. Historia, montaña y respeto por el legado de los pueblos andinos.",
+    categories: ["Cultura", "Montaña"],
+  },
+  {
+    id: "iguazu",
+    title: "Cataratas del Iguazú",
+    image: iguazu,
+    description:
+      "Recorré pasarelas sobre saltos imponentes en plena selva paranaense, con guías que explican la conservación de su fauna y flora.",
+    categories: ["Naturaleza"],
+  },
+  {
+    id: "atacama",
+    title: "Desierto de Atacama",
+    image: atacama,
+    description:
+      "Observá flamencos en lagunas altiplánicas y uno de los cielos más limpios del planeta, en tours de astroturismo con comunidades atacameñas.",
+    categories: ["Naturaleza", "Montaña", "Cultura"],
+  },
+  {
+    id: "tayrona",
+    title: "Parque Tayrona",
+    image: tayrona,
+    description:
+      "Playas vírgenes entre selva y rocas gigantes, territorio ancestral de los pueblos de la Sierra Nevada. Se accede a pie y con aforo controlado.",
+    categories: ["Playa", "Cultura"],
+  },
+  {
+    id: "noronha",
+    title: "Fernando de Noronha",
+    image: noronha,
+    description:
+      "Archipiélago brasileño con tasa ambiental y visitantes limitados: buceo entre delfines, arrecifes protegidos y playas de agua cristalina.",
+    categories: ["Playa", "Naturaleza"],
   },
 ];
 
@@ -293,7 +347,7 @@ function Index() {
               Destinos destacados
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Seis experiencias seleccionadas por su compromiso con la
+              Doce experiencias seleccionadas por su compromiso con la
               conservación, las comunidades locales y la aventura responsable.
               Filtrá por categoría o buscá lo que necesitás.
             </p>
