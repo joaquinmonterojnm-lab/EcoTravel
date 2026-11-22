@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Leaf,
   Menu,
@@ -10,11 +10,15 @@ import {
   Facebook,
   Twitter,
   ArrowRight,
+  Search,
 } from "lucide-react";
 
 import patagonia from "@/assets/patagonia.jpg";
 import costarica from "@/assets/costarica.jpg";
 import andes from "@/assets/andes.jpg";
+import amazonia from "@/assets/amazonia.jpg";
+import uyuni from "@/assets/uyuni.jpg";
+import cartagena from "@/assets/cartagena.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -59,13 +63,26 @@ const navLinks = [
   { label: "Contacto", href: "#contacto" },
 ];
 
-const destinations = [
+const categories = ["Naturaleza", "Playa", "Montaña", "Cultura"] as const;
+
+type Category = (typeof categories)[number];
+
+type Destination = {
+  id: string;
+  title: string;
+  image: string;
+  description: string;
+  categories: Category[];
+};
+
+const destinations: Destination[] = [
   {
     id: "patagonia",
     title: "Bosques de Patagonia",
     image: patagonia,
     description:
       "Recorre senderos de lenga y coihue entre glaciares y montañas. Una experiencia de trekking de bajo impacto en el corazón de la Argentina austral.",
+    categories: ["Naturaleza", "Montaña"],
   },
   {
     id: "costarica",
@@ -73,6 +90,7 @@ const destinations = [
     image: costarica,
     description:
       "Relájate en albergues ecológicos frente al Caribe o el Pacífico. Avistamiento de tortugas, surf sostenible y comunidades locales te esperan.",
+    categories: ["Playa", "Naturaleza"],
   },
   {
     id: "andes",
@@ -80,6 +98,31 @@ const destinations = [
     image: andes,
     description:
       "Descubre pueblos originarios, valles verdes y cumbres nevadas. Turismo comunitario que respeta las tradiciones y protege la biodiversidad.",
+    categories: ["Montaña", "Cultura"],
+  },
+  {
+    id: "amazonia",
+    title: "Selva de la Amazonia",
+    image: amazonia,
+    description:
+      "Navegá ríos navegables y lodges de madera certificada. Guías locales te muestran la flora, la fauna y el trabajo de conservación de la selva.",
+    categories: ["Naturaleza"],
+  },
+  {
+    id: "uyuni",
+    title: "Altiplano y Salar de Uyuni",
+    image: uyuni,
+    description:
+      "Cruza lagunas de colores, geiseres y desiertos de sal a más de 3.500 metros. Un recorrido en 4x4 con operadores que compensan su huella de carbono.",
+    categories: ["Montaña", "Naturaleza"],
+  },
+  {
+    id: "cartagena",
+    title: "Ciudad Colonial de Cartagena",
+    image: cartagena,
+    description:
+      "Caminá murallas, plazas y barrios caribeños. Alojamientos familiares, cocina de mercado y visitas que sostienen el patrimonio vivo de la costa.",
+    categories: ["Cultura", "Playa"],
   },
 ];
 
@@ -110,6 +153,27 @@ function NavAnchor({
 
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<"Todos" | Category>(
+    "Todos",
+  );
+  const [query, setQuery] = useState("");
+
+  const filteredDestinations = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return destinations.filter((destination) => {
+      const matchesCategory =
+        activeCategory === "Todos" ||
+        destination.categories.includes(activeCategory);
+      const matchesQuery =
+        needle === "" ||
+        `${destination.title} ${destination.description}`
+          .toLowerCase()
+          .includes(needle);
+      return matchesCategory && matchesQuery;
+    });
+  }, [activeCategory, query]);
+
+  const hasActiveFilters = activeCategory !== "Todos" || query.trim() !== "";
 
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
@@ -224,48 +288,156 @@ function Index() {
           id="destinos"
           className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
         >
-          <div className="mb-12 text-center md:mb-16">
+          <div className="mb-10 text-center md:mb-12">
             <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Destinos destacados
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Tres experiencias seleccionadas por su compromiso con la
+              Seis experiencias seleccionadas por su compromiso con la
               conservación, las comunidades locales y la aventura responsable.
+              Filtrá por categoría o buscá lo que necesitás.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {destinations.map((destination) => (
-              <article
-                key={destination.id}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={destination.image}
-                    alt={destination.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-xl font-semibold text-foreground">
-                    {destination.title}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {destination.description}
-                  </p>
-                  <a
-                    href={`#${destination.id}`}
-                    className="mt-5 inline-flex items-center gap-2 self-start rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          <div className="mx-auto mb-10 flex max-w-4xl flex-col gap-5">
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Buscar destinos, actividades o paisajes..."
+                aria-label="Buscar destinos"
+                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-11 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              />
+              {query !== "" && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Limpiar la búsqueda"
+                  className="absolute right-3 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+
+            <div
+              role="group"
+              aria-label="Filtrar destinos por categoría"
+              className="flex flex-wrap items-center justify-center gap-2"
+            >
+              {(["Todos", ...categories] as const).map((category) => {
+                const isActive = activeCategory === category;
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setActiveCategory(category)}
+                    aria-pressed={isActive}
+                    className={
+                      isActive
+                        ? "rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors"
+                        : "rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    }
                   >
-                    Ver más
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </a>
-                </div>
-              </article>
-            ))}
+                    {category}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+              <span aria-live="polite">
+                Mostrando {filteredDestinations.length} de{" "}
+                {destinations.length} destinos
+              </span>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory("Todos");
+                    setQuery("");
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  Limpiar filtros
+                </button>
+              )}
+            </div>
           </div>
+
+          {filteredDestinations.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredDestinations.map((destination) => (
+                <article
+                  key={destination.id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <img
+                      src={destination.image}
+                      alt={destination.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="flex flex-wrap gap-2">
+                      {destination.categories.map((category) => (
+                        <span
+                          key={category}
+                          className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
+                        >
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                    <h3 className="mt-3 font-display text-xl font-semibold text-foreground">
+                      {destination.title}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {destination.description}
+                    </p>
+                    <a
+                      href={`#${destination.id}`}
+                      className="mt-5 inline-flex items-center gap-2 self-start rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    >
+                      Ver más
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="mx-auto max-w-md rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+              <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Search className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-foreground">
+                No encontramos destinos con esos filtros
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Probá con otra palabra o elegí una categoría distinta para ver
+                más experiencias.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory("Todos");
+                  setQuery("");
+                }}
+                className="mt-6 inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Ver todos los destinos
+              </button>
+            </div>
+          )}
         </section>
 
         <section
@@ -412,3 +584,5 @@ function Index() {
     </div>
   );
 }
+
+export default Index;
